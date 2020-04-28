@@ -5,14 +5,15 @@ library (readxl)
 library (dplyr)
 
 # Upload files ----
-files <- list.files("H:\\NIDA\\Reduced") # list of name of .mat files
-disp <- readxl::read_excel("H:\\NIDA\\disposition.xls")
+files <- list.files(file.path("Data", "ReducedDataElem")) # list of name of .mat files
+disp <- readxl::read_excel(file.path("Data", "disposition.xls"))
+
 # filter ignore/discard data
 disp <- filter (disp, is.na(Ignore)) %>% filter(., is.na(Discard))
 fileNames <- str_replace(disp$DaqName, ".daq", ".mat")
 
 # Convert every analyze/reduced files into csv format including participant id and visit number
-for (i in 1:length(fileNames)){
+for (i in 1:length(fileNames)) {
   convertToCSV(fileNames[i], as.numeric(substr(disp$DaqPath[i],1,3)),disp$Visit[i])
 }
 
@@ -23,8 +24,8 @@ for (i in 1:length(fileNames)){
 ## visit: visit number from disposition file
 ## output----
 ## save csv file version of this .mat file in assigned directory
-convertToCSV <- function (fileName, id, visit){
-  path <- paste0("H:\\NIDA\\Reduced\\",fileName)
+convertToCSV <- function (fileName, id, visit) {
+  path <- file.path("Data", "ReducedDataElem", fileName)
   temp <- readMat(path)
   data <- temp$elemData
   # Create dataframe including participantID, visit
@@ -32,11 +33,11 @@ convertToCSV <- function (fileName, id, visit){
   tempdf <- data.frame("DaqName" = rep(fileName, rowN),"ID" = rep(id, rowN), "Visit" = rep(visit, rowN))
   r <- rownames(data)
   # Add variables from elemData
-  for (var in 1:length(data)){
+  for (var in 1:length(data)) {
     varName = paste0(r[var])
-    if (ncol(data[[var]]) == 1){
+    if (ncol(data[[var]]) == 1) {
       tempdf[varName] = data[[var]]
-    }else{
+    } else {
       for (i in 1:ncol(data[[var]])){
         newColName = paste0(varName,".",i)
         tempdf[newColName] = data[[var]][,i]
@@ -44,5 +45,5 @@ convertToCSV <- function (fileName, id, visit){
     }
   }
   # Convert dataframe to csv file
-  write.csv(tempdf, file = paste0("H:\\NIDA\\ReducedCSV\\",substr(fileName, 1, nchar(fileName)-4), ".csv"))
+  write.csv(tempdf, file = file.path("Data", "ReducedCSVElem", paste0(substr(fileName, 1, nchar(fileName)-4), ".csv")))
 }
