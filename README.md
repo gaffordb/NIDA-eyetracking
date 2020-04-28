@@ -28,12 +28,12 @@ This project contains the following folders:
 ## Usage instructions
 First, you will need to include the raw data and `disposition.xls` file as specified in the Project structure section above. 
 
-To clean the data, type `r cleanData.R` into the command line at the base of this repository. 
+To clean the data, type `RScript cleanData.R` into the command line at the base of this repository. 
 
 > After this script runs, you should see the finalized data available in `Data/CleanCSV`, and it should look something like this: 
 [insert screenshot of cleaned data]
 
-To run the data analyses, you can type `r analyzeData.R` into the command line at the base of this repository.
+To run the data analyses, you can type `RScript analyzeData.R` into the command line at the base of this repository.
 > After this script runs, you should see an HTML file in `Results` showing the final analysis. Notice that this is currently a work in progress. 
 
 ## Things to note
