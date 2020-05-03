@@ -1,8 +1,13 @@
-files = dir('RawData' filesep 'MatFiles' filesep);
-for i = 3:(length(files)-1)
-    filename = strcat('RawData' filesep 'MatFiles' filesep, files(i).name);
-    reduceFile(filename);
-    disp(filename);
+files = dir(strcat('..', filesep, 'Data', filesep, 'RawData', filesep));
+for i = 3:(length(files))
+    if isfile(strcat('..', filesep, 'Data', filesep, 'ReducedDataEye',filesep, files(i).name)) && isfile(strcat('..', filesep, 'Data', filesep, 'ReducedDataElem',filesep, files(i).name))
+      disp(strcat(files(i).name, ' already exists.'));
+    else
+      filename = strcat('..', filesep, 'Data', filesep, 'RawData', filesep, files(i).name);
+      disp(strcat('Reduced', files(i).name));
+      reduceFile(filename);   
+    end
+
 end
 
 function reduceFile(filename)
@@ -12,7 +17,7 @@ function reduceFile(filename)
 data = load('-mat', filename);
 
 % Get 'elemDataI' and rename
-elemData = getfield (data, 'elemDataI');
+elemData = getfield(data, 'elemDataI');
 eyeData = getfield(data, 'eyeData');
 
 unnecessaryEye = {'Gaze_Calib','Gaze_Rot_L_Y', 'Gaze_Rot_L_X', ...
@@ -25,11 +30,12 @@ unnecessaryElem = {'AUX_CabMiscButtons','AUX_SteeringWheelButtons', ...
 elemData = rmfield(elemData,unnecessaryElem);
 eyeData = rmfield(eyeData, unnecessaryEye);
 
-elemfname = strcat('ReducedDataElem' filesep, strrep(filename, 'RawData' ...
-                                                  filesep,''));
+warning('off', 'MATLAB:MKDIR:DirectoryExists');
+mkdir(strcat('..', filesep, 'Data', filesep, 'ReducedDataElem'));
+mkdir(strcat('..', filesep, 'Data', filesep, 'ReducedDataEye'));
 
-eyefname = strcat('ReducedDataEye' filesep, strrep(filename, 'RawData' ...
-                                                  filesep,''));
+elemfname = strcat('..', filesep, 'Data', filesep, 'ReducedDataElem',filesep, strrep(filename, strcat('..', filesep, 'Data', filesep, 'RawData', filesep),''));
+eyefname = strcat('..', filesep, 'Data', filesep, 'ReducedDataEye',filesep, strrep(filename, strcat('..', filesep, 'Data', filesep, 'RawData', filesep),''));
 
 % Save into new directory
 save(elemfname, 'elemData')

@@ -1,23 +1,10 @@
-library(R.matlab) # Reads matlab files
-library(stringr) # String manipulation
-library(tidyverse)
-library (readxl)
-library (dplyr)
+library(R.matlab, quietly = TRUE, warn.conflicts = FALSE) # Reads matlab files
+library(stringr, quietly = TRUE, warn.conflicts = FALSE) # String manipulation
+library(tidyverse, quietly = TRUE, warn.conflicts = FALSE)
+library(readxl, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 
-# Upload files ----
-files <- list.files(file.path("Data", "ReducedDataEye")) # list of name of .mat files
-
-disp <- readxl::read_excel(file.path("Data", "disposition.xls"))
-
-# filter ignore/discard data
-disp <- filter (disp, is.na(Ignore)) %>% filter(., is.na(Discard))
-fileNames <- str_replace(disp$DaqName, ".daq", ".mat")
-
-# Convert every analyze/reduced files into csv format including participant id and visit number
-for (i in 1:length(fileNames)) {
-  convertToCSV(fileNames[i], as.numeric(substr(disp$DaqPath[i],1,3)),disp$Visit[i])
-}
-
+root = file.path('Data')
 # converToCSV----
 ## input----
 ## fileName: name of the file needed to covert to csv
@@ -26,7 +13,7 @@ for (i in 1:length(fileNames)) {
 ## output----
 ## save csv file version of this .mat file in assigned directory
 convertToCSV <- function (fileName, id, visit) {
-  path <- file.path("Data", "ReducedDataEye", fileName)
+  path <- file.path(root, "ReducedDataEye", fileName)
   temp <- readMat(path)
   temp[[1]][[23]] = sapply(temp[[1]][[23]], toString)
   temp[[1]][[24]] = sapply(temp[[1]][[24]], toString)
@@ -37,7 +24,7 @@ convertToCSV <- function (fileName, id, visit) {
   rowN <- length(data[[1]]) # how many rows this data contain
   tempdf <- data.frame("DaqName" = rep(fileName, rowN),"ID" = rep(id, rowN), "Visit" = rep(visit, rowN))
   r <- rownames(data)
-
+  
   
   # Add variables from elemData
   for (var in 1:length(data)) {
@@ -52,5 +39,31 @@ convertToCSV <- function (fileName, id, visit) {
     }
   }
   # Convert dataframe to csv file
-  write.csv(tempdf, file = file.path("Data", "ReducedCSVEye", paste0(substr(fileName, 1, nchar(fileName)-4), ".csv")))
+  write.csv(tempdf, file = file.path(root, "ReducedCSVEye", paste0(substr(fileName, 1, nchar(fileName)-4), ".csv")))
 }
+
+# Upload files ----
+files <- list.files(file.path(root, "ReducedDataEye")) # list of name of .mat files
+
+disp <- readxl::read_excel(file.path(root, "disposition.xls"))
+
+# filter ignore/discard data
+disp <- filter (disp, is.na(Ignore)) %>% filter(., is.na(Discard)) %>% filter(str_replace(DaqName, ".daq", ".mat") %in% files)
+fileNames <- str_replace(disp$DaqName, ".daq", ".mat")
+
+# Create directory if if doesn't already exist
+if(!dir.exists(file.path(root, 'ReducedCSVEye'))) {
+  dir.create(file.path(root, 'ReducedCSVEye'))
+}
+
+# Convert every analyze/reduced files into csv format including participant id and visit number
+for (i in 1:length(fileNames)) {
+  if(file.exists(file.path(root, 'ReducedCSVEye', str_replace(fileNames[i], ".mat", ".csv")))) {
+    message(paste(fileNames[i], "eye data already converted to CSV."))
+  } else {
+    convertToCSV(fileNames[i], as.numeric(substr(disp$DaqPath[i],1,3)),disp$Visit[i])
+    message(paste("Converting", fileNames[i], "eye data to CSV."))
+  }
+}
+
+

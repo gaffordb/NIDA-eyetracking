@@ -1,12 +1,13 @@
-require(plyr)
-require(dplyr)
+require(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+
+root = file.path("Data")
 
 # task_length (in seconds) -- assume task length is 10 seconds, and assumes that 1 row = 1 frame
 TASK_LENGTH_SEC = 10
 TASK_LENGTH = TASK_LENGTH_SEC*60
 
 # Need to be above Data directory when calling this
-disp = read.csv(file.path("Data", "dispositionUpdate.csv"))
+disp = read.csv(file.path(root, "dispositionUpdate.csv"))
 fileNames = disp$DaqName
 
 cleanMenuSearch = function(df) {
@@ -30,12 +31,21 @@ cleanMenuSearch = function(df) {
   return(df)
 }
 
+cleaned = if(file.exists(file.path(root, "CleanCSV", ".meta"))) readLines(file.path(root, "CleanCSV", ".meta")) else ""
+
 for(i in 1:length(fileNames)){
-  # Read data
-  data = read.csv(file.path("Data", "CleanCSV", fileNames[i]))
-  
-  data_new = cleanMenuSearch(data)
-  
-  # Write data
-  write.csv(data_new, file.path("Data", "CleanCSV", fileNames[i]))
+  if(fileNames[i] %in% cleaned) {
+    message(paste(fileNames[i], "already cleaned."))
+  } else {
+    # Read data
+    data = read.csv(file.path(root, "CleanCSV", fileNames[i]))
+    
+    data_new = cleanMenuSearch(data)
+
+    # So we know which ones have already been done...
+    write(as.character(fileNames[i]), file = file.path(root, "CleanCSV", ".meta"), append = TRUE)
+    
+    # Write data
+    write.csv(data_new, file.path(root, "CleanCSV", fileNames[i]))
+  }
 }

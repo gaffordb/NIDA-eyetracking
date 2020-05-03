@@ -1,21 +1,10 @@
-library(R.matlab) # Reads matlab files
-library(stringr) # String manipulation
-library(tidyverse)
-library (readxl)
-library (dplyr)
+library(R.matlab, quietly = TRUE, warn.conflicts = FALSE) # Reads matlab files
+library(stringr, quietly = TRUE, warn.conflicts = FALSE) # String manipulation
+library(tidyverse, quietly = TRUE, warn.conflicts = FALSE)
+library(readxl, quietly = TRUE, warn.conflicts = FALSE)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 
-# Upload files ----
-files <- list.files(file.path("Data", "ReducedDataElem")) # list of name of .mat files
-disp <- readxl::read_excel(file.path("Data", "disposition.xls"))
-
-# filter ignore/discard data
-disp <- filter (disp, is.na(Ignore)) %>% filter(., is.na(Discard))
-fileNames <- str_replace(disp$DaqName, ".daq", ".mat")
-
-# Convert every analyze/reduced files into csv format including participant id and visit number
-for (i in 1:length(fileNames)) {
-  convertToCSV(fileNames[i], as.numeric(substr(disp$DaqPath[i],1,3)),disp$Visit[i])
-}
+root = file.path('Data')
 
 # converToCSV----
 ## input----
@@ -25,7 +14,7 @@ for (i in 1:length(fileNames)) {
 ## output----
 ## save csv file version of this .mat file in assigned directory
 convertToCSV <- function (fileName, id, visit) {
-  path <- file.path("Data", "ReducedDataElem", fileName)
+  path <- file.path(root, "ReducedDataElem", fileName)
   temp <- readMat(path)
   data <- temp$elemData
   # Create dataframe including participantID, visit
@@ -45,5 +34,29 @@ convertToCSV <- function (fileName, id, visit) {
     }
   }
   # Convert dataframe to csv file
-  write.csv(tempdf, file = file.path("Data", "ReducedCSVElem", paste0(substr(fileName, 1, nchar(fileName)-4), ".csv")))
+  write.csv(tempdf, file = file.path(root, "ReducedCSVElem", paste0(substr(fileName, 1, nchar(fileName)-4), ".csv")))
 }
+
+# Upload files ----
+files <- list.files(file.path(root, "ReducedDataElem")) # list of name of .mat files
+disp <- readxl::read_excel(file.path(root, "disposition.xls"))
+
+# filter ignore/discard data
+disp <- filter (disp, is.na(Ignore)) %>% filter(., is.na(Discard)) %>% filter(str_replace(DaqName, ".daq", ".mat") %in% files)
+fileNames <- str_replace(disp$DaqName, ".daq", ".mat")
+
+# Create directory if if doesn't already exist
+if(!dir.exists(file.path(root, 'ReducedCSVElem'))) {
+  dir.create(file.path(root, 'ReducedCSVElem'))
+}
+
+# Convert every analyze/reduced files into csv format including participant id and visit number
+for (i in 1:length(fileNames)) {
+  if(file.exists(file.path(root, 'ReducedCSVElem', str_replace(fileNames[i], ".mat", ".csv")))) {
+    message(paste(fileNames[i], "elem data already converted to CSV."))
+  } else {
+    convertToCSV(fileNames[i], as.numeric(substr(disp$DaqPath[i],1,3)),disp$Visit[i])
+    message(paste("Converting", fileNames[i], "elem data to CSV."))
+  }
+}
+

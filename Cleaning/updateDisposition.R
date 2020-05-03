@@ -1,7 +1,7 @@
-library(stringr)
-library(tidyverse)
-library ("readxl")
-library ("dplyr")
+library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(tidyverse, quietly = TRUE, warn.conflicts = FALSE)
+library ("readxl", quietly = TRUE, warn.conflicts = FALSE)
+library ("dplyr", quietly = TRUE, warn.conflicts = FALSE)
 
 # Note: which one this (Eye vs Elem)  doesn't matter -- it's just pulling the filenames
 csv_dir = if(file.exists(file.path("Data", "CleanCSV"))) "CleanCSV" else "ReducedCSVElem"

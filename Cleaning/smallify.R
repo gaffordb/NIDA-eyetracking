@@ -1,5 +1,4 @@
-require(plyr)
-require(dplyr)
+library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 
 # NOTE: this is only used if you want to further reduce the dataset 
 # if you identify any columns don't need to exist anymore
@@ -17,7 +16,10 @@ COLUMNS_WE_WANT_ELEM = c("DaqName",
                     "Frames", 
                     "Time")
 
-COLUMNS_WE_WANT_EYE = c("") #TODO Adam
+COLUMNS_WE_WANT_EYE = c("Frame.Num",
+                        "Saccade",
+                        "Combined.Item.Name",
+                        "Head.Item.Name") #TODO Adam more?
   
 # Need to be above Data directory when calling this
 disp = read.csv(file.path("Data", "dispositionUpdate.csv"))
