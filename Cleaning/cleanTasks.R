@@ -1,4 +1,5 @@
 require(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(progress, quietly = TRUE)
 
 root = file.path("Data")
 
@@ -33,9 +34,11 @@ cleanMenuSearch = function(df) {
 
 cleaned = if(file.exists(file.path(root, "CleanCSV", ".meta"))) readLines(file.path(root, "CleanCSV", ".meta")) else ""
 
-for(i in 1:length(fileNames)){
+pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = length(fileNames), show_after = 0)
+pb$tick(0)
+for (i in 1:length(fileNames)) {
   if(fileNames[i] %in% cleaned) {
-    message(paste(fileNames[i], "already cleaned."))
+    #message(paste(fileNames[i], "already cleaned."))
   } else {
     # Read data
     data = read.csv(file.path(root, "CleanCSV", fileNames[i]))
@@ -48,4 +51,5 @@ for(i in 1:length(fileNames)){
     # Write data
     write.csv(data_new, file.path(root, "CleanCSV", fileNames[i]))
   }
+  pb$tick()
 }

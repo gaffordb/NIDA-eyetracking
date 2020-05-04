@@ -3,6 +3,7 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE) # String manipulation
 library(tidyverse, quietly = TRUE, warn.conflicts = FALSE)
 library(readxl, quietly = TRUE, warn.conflicts = FALSE)
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(progress, quietly = TRUE)
 
 root = file.path('Data')
 # converToCSV----
@@ -56,14 +57,16 @@ if(!dir.exists(file.path(root, 'ReducedCSVEye'))) {
   dir.create(file.path(root, 'ReducedCSVEye'))
 }
 
-# Convert every analyze/reduced files into csv format including participant id and visit number
+pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = length(fileNames), show_after = 0)
+pb$tick(0)
 for (i in 1:length(fileNames)) {
   if(file.exists(file.path(root, 'ReducedCSVEye', str_replace(fileNames[i], ".mat", ".csv")))) {
-    message(paste(fileNames[i], "eye data already converted to CSV."))
+    #message(paste(fileNames[i], "eye data already converted to CSV."))
   } else {
     convertToCSV(fileNames[i], as.numeric(substr(disp$DaqPath[i],1,3)),disp$Visit[i])
-    message(paste("Converting", fileNames[i], "eye data to CSV."))
+    # message(paste("Converting", fileNames[i], "eye data to CSV."))
   }
+  pb$tick()
 }
 
 

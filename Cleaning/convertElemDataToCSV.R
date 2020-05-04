@@ -3,6 +3,7 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE) # String manipulation
 library(tidyverse, quietly = TRUE, warn.conflicts = FALSE)
 library(readxl, quietly = TRUE, warn.conflicts = FALSE)
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
+library(progress, quietly = TRUE)
 
 root = file.path('Data')
 
@@ -50,13 +51,15 @@ if(!dir.exists(file.path(root, 'ReducedCSVElem'))) {
   dir.create(file.path(root, 'ReducedCSVElem'))
 }
 
-# Convert every analyze/reduced files into csv format including participant id and visit number
+
+pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = length(fileNames), show_after = 0)
+pb$tick(0)
 for (i in 1:length(fileNames)) {
   if(file.exists(file.path(root, 'ReducedCSVElem', str_replace(fileNames[i], ".mat", ".csv")))) {
-    message(paste(fileNames[i], "elem data already converted to CSV."))
+    #message(paste(fileNames[i], "elem data already converted to CSV."))
   } else {
     convertToCSV(fileNames[i], as.numeric(substr(disp$DaqPath[i],1,3)),disp$Visit[i])
-    message(paste("Converting", fileNames[i], "elem data to CSV."))
   }
+  pb$tick()
 }
 

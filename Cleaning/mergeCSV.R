@@ -1,15 +1,17 @@
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library("base", quietly = TRUE, warn.conflicts = FALSE)
+library(progress, quietly = TRUE)
 
 root = "Data"
 
 disp = read.csv(file.path(root, "dispositionUpdate.csv"))
 fileNames = disp$DaqName
 
-for(i in 1:length(fileNames)) {
-  
+pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = length(fileNames), show_after = 0)
+pb$tick(0)
+for (i in 1:length(fileNames)) {
   if(file.exists(file.path(root, "CleanCSV", fileNames[i]))) {
-    message(paste(fileNames[i], "already exists."))
+    #message(paste(fileNames[i], "already exists."))
   } else {
     # Read data
     data1 = read.csv(file.path(root, "reducedCSVElem", fileNames[i]))
@@ -25,4 +27,5 @@ for(i in 1:length(fileNames)) {
     
     write.csv(data3, file.path(root, "CleanCSV", fileNames[i]))
   }
+  pb$tick()
 }

@@ -5,21 +5,25 @@ using<-function(...) {
   req<-unlist(lapply(libs,require,character.only=TRUE))
   need<-libs[req==FALSE]
   if(length(need)>0){ 
-    install.packages(need)
-    lapply(need,require,character.only=TRUE)
+    install.packages(need, repos = "http://cran.us.r-project.org")
+    suppressWarnings(lapply(need,require,character.only=TRUE))
   }
 }
 
-using("matlabr","ggplot2", "dplyr", "plyr", "R.matlab")
+# Suppress tidyverse output
+options(tidyverse.quiet = TRUE)
+
+suppressPackageStartupMessages(using("matlabr","ggplot2", "dplyr", "R.matlab", "progress"))
+#using("matlabr","ggplot2", "dplyr", "R.matlab", "progress")
 
 library(matlabr, quietly = TRUE, warn.conflicts = FALSE)
 
 # Reduce the Matfiles
 if(have_matlab()) {
-  message("This will take a while...")
+  message("This may take a while...")
   message("-------------------------------------")
   message("Reducing mat files...")
-  run_matlab_script(file.path("Cleaning", "reduceMatfile.m"))
+  run_matlab_script(file.path("Cleaning", "reduceMatfile.m"), verbose = FALSE)
   message("Matfiles have been reduced.")
   
 } else {
