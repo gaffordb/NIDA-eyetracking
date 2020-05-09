@@ -46,7 +46,7 @@ First, you will need to include the raw data and `disposition.xls` file as speci
 To clean the data, type `<rcommand> cleanData.R` into the command line at the base of this repository. 
 
 > After this script runs, you should see the finalized data available in `Data/CleanCSV`, and it should look something like this: 
-![image of Data and CleanCSV folder after running cleaning scripts](https://github.com/gaffordb/NIDA-eyetracking/blob/files-after-cleaning.png?raw=true)
+![image of Data and CleanCSV folder after running cleaning scripts](https://github.com/gaffordb/NIDA-eyetracking/blob/master/Images/files-after-cleaning.png?raw=true)
 
 
 To run the data analyses, you can type `RScript analyzeData.R` into the command line at the base of this repository.
