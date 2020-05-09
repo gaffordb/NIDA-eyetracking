@@ -53,4 +53,4 @@ To run the data analyses, you can type `RScript analyzeData.R` into the command 
 > After this script runs, you should see an HTML file in `Results` showing the final analysis. Notice that this is currently a work in progress. 
 
 ## Things to note
-This covers the overall structure of this project. The analysis scripts in this folder have not yet been completed, but you can see some rudimentary analysis that we have done so far. This should serve as a good jumping off point for future researchers. 
+The analysis scripts in this folder have not yet been completed, but you can see some rudimentary analysis that we have done so far. This should serve as a good jumping off point for future researchers. 
