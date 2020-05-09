@@ -17,8 +17,6 @@ disp = disp[str_replace(disp$DaqName, ".daq", ".csv") %in% files,]
 
 fileNames <- str_replace(disp$DaqName, ".daq", ".csv")
 
-#fileNames = fileNames[fileNames %in% files]
-
 noevents <- c()
 for (i in 1:length(fileNames)){
   try(tempFile <- read.csv(file.path("Data", csv_dir, fileNames[i])))

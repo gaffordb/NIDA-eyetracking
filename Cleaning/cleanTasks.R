@@ -11,6 +11,9 @@ TASK_LENGTH = TASK_LENGTH_SEC*60
 disp = read.csv(file.path(root, "dispositionUpdate.csv"))
 fileNames = disp$DaqName
 
+# This function makes MenuSearch task values more sensible:
+# - A zero value indicates no task is active
+# - A nonzero value indicates some MenuSearch task is active
 cleanMenuSearch = function(df) {
   cur_val = df$SCC.MenuSearch[1]
   task_active = 0

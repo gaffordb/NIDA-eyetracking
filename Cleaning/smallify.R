@@ -1,7 +1,8 @@
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 
 # NOTE: this is only used if you want to further reduce the dataset 
-# if you identify any columns don't need to exist anymore
+# if you identify any columns don't need to exist anymore.
+# It is not necessary, as these columns can be excluded in reduceMat.m.
 
 # Can change this according to needs
 COLUMNS_WE_WANT_ELEM = c("DaqName", 
