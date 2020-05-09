@@ -35,7 +35,7 @@ combineRuns = function(runs) {
   runs = runs %>% reduce(bind_rows)
 }
 
-# Create some visuals
+# Create some visuals -- note: this isn't entirely working right now.
 # provide the user id to look at and the dosages, or provide the specific runs to use (formatted as full paths)
 makeVisuals = function(partipantID = 21, dosages = c("XP", "ZM"), runs = NA, labels = NA) {
   # Use user-supplied runs if possible

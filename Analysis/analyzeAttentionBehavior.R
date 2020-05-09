@@ -29,7 +29,3 @@ getGazeInfo = function(obj_stream) {
   
   return(data.frame(lens = gaze_lens, objs = gaze_objs))
 }
-
-getAvgGazeLen = function(obj_stream) {
-  return(mean(getGazeInfo(obj_stream)$len))
-}

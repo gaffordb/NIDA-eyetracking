@@ -10,11 +10,10 @@ using<-function(...) {
   }
 }
 
-# Suppress tidyverse output
+# Suppress tidyverse output bc it's ugly
 options(tidyverse.quiet = TRUE)
 
 suppressPackageStartupMessages(using("matlabr","ggplot2", "dplyr", "R.matlab", "progress"))
-#using("matlabr","ggplot2", "dplyr", "R.matlab", "progress")
 
 library(matlabr, quietly = TRUE, warn.conflicts = FALSE)
 
