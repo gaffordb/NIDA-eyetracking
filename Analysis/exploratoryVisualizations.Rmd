@@ -1,0 +1,112 @@
+---
+title: "Exploratory Visualizations"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+
+require(dplyr)
+require(ggplot2)
+require(openintro)
+require(lattice)
+require(stringr)
+
+# Fix our directory if we're one too high
+if(str_detect(getwd(), ".*Analysis.*$")) {
+  setwd("../")
+}
+
+source(file.path("Analysis", "analyzeAttentionBehavior.R"))
+```
+
+```{r, include = FALSE}
+# Fix our directory if we're one too high
+if(str_detect(getwd(), ".*Analysis.*$")) {
+  setwd("../")
+}
+
+clean_path = file.path("Data", "CleanCSV")
+drunk1 = read.csv(file.path(clean_path, "20130612090533.csv"))
+sober1 = read.csv(file.path(clean_path, "20130529091650.csv"))
+```
+
+```{r, include = FALSE}
+drunkEventOccur = filter(drunk1, SCC.MenuSearch != 0)
+soberEventOccur = filter(sober1, SCC.MenuSearch != 0)
+drunkEventNotOccur = filter(drunk1, SCC.MenuSearch == 0)
+soberEventNotOccur = filter(sober1, SCC.MenuSearch == 0)
+```
+
+### Examining proportion of items being looked at by dosing condition and whether the event was occurring
+```{r}
+barplot(table(drunkEventOccur$Combined.Item.Name)/nrow(drunkEventOccur)*100, ylim=c(0,100), ylab = "Percent", xlab = "object index number", main = "Intoxicated (THC:2.630 and BAC: 0.065) and Artist Search Task Occuring")
+
+barplot(table(drunkEventNotOccur$Combined.Item.Name)/nrow(drunkEventNotOccur)*100, ylim=c(0,100), ylab = "Percent", xlab = "object index number", main = "Intoxicated (THC:2.630 and BAC: 0.065) and Artist Search Task Not Occuring")
+
+barplot(table(soberEventOccur$Combined.Item.Name)/nrow(soberEventOccur)*100, ylim=c(0,100), ylab = "Percent", xlab = "object index number", main = "Sober and Artist Search Task Occuring")
+
+barplot(table(soberEventNotOccur$Combined.Item.Name)/nrow(soberEventNotOccur)*100, ylim=c(0,100), ylab = "Percent", xlab = "object index number", main = "Sober and Artist Search Task Not Occuring")
+```
+
+### Examining saccade data
+```{r}
+sum(drunkEventNotOccur$Saccade == 1) / nrow(drunkEventNotOccur)
+sum(drunkEventOccur$Saccade == 1) / nrow(drunkEventOccur)
+sum(soberEventOccur$Saccade == 1) / nrow(soberEventOccur)
+sum(soberEventNotOccur$Saccade == 1) / nrow(soberEventNotOccur)
+```
+
+### Gathering gaze info
+```{r}
+gazinginfodrunkEventOccur= getGazeInfo(as.character(drunkEventOccur$Combined.Item.Name))
+gazinginfodrunkEventOccur = filter(gazinginfodrunkEventOccur, objs != "Nothing")
+
+gazinginfodrunkEventNotOccur= getGazeInfo(as.character(drunkEventNotOccur$Combined.Item.Name))
+gazinginfodrunkEventNotOccur = filter(gazinginfodrunkEventNotOccur, objs != "Nothing")
+
+gazinginfosoberEventOccur= getGazeInfo(as.character(soberEventOccur$Combined.Item.Name))
+gazinginfosoberEventOccur = filter(gazinginfosoberEventOccur, objs != "Nothing")
+
+gazinginfosoberEventNotOccur= getGazeInfo(as.character(soberEventNotOccur$Combined.Item.Name))
+gazinginfosoberEventNotOccur = filter(gazinginfosoberEventNotOccur, objs != "Nothing")
+```
+
+### Examining gaze info summary statistics
+```{r}
+summary(gazinginfodrunkEventOccur)
+summary(gazinginfodrunkEventNotOccur)
+summary(gazinginfosoberEventOccur)
+summary(gazinginfosoberEventNotOccur)
+```
+Different average gaze lengths could suggest that different attention strategies were employed. Longer average gaze lengths could suggest that the participant was diverting their attention for longer uninterrupted intervals. 
+
+### Examining gaze length distributions
+```{r}
+boxplot(gazinginfodrunkEventOccur$lens, ylab="Gaze Length Time", main = "Intoxicated (THC:2.630 and BAC: 0.065) and Artist Search Task Occuring") 
+boxplot(gazinginfodrunkEventNotOccur$lens, ylab="Gaze Length Time", main = "Intoxicated (THC:2.630 and BAC: 0.065) and Artist Search Task Not Occuring") 
+boxplot(gazinginfosoberEventOccur$lens, ylab="Gaze Length Time", main = "Sober and Artist Search Task Occuring") 
+boxplot(gazinginfosoberEventNotOccur$lens, ylab="Gaze Length Time", main = "Sober and Artist Search Task Not Occuring")
+
+boxplot(gazinginfodrunkEventOccur$lens, at = 1, xlim = c(0.5, 4.5), ylim = c(0,30), boxcol="red", medcol = "red", ylab="Gaze Length Time", main = "Gaze Length Time over Different Dosages and the Artist Search Task")
+boxplot(gazinginfodrunkEventNotOccur$lens, at = 2, add = TRUE, boxcol="blue", ylim = c(0,30), medcol = "blue") 
+boxplot(gazinginfosoberEventOccur$lens, at = 3, add= TRUE, boxcol="green", ylim = c(0,30), medcol = "green") 
+boxplot(gazinginfosoberEventNotOccur$lens, at = 4, add = TRUE, ylim = c(0,30) ) 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
